@@ -1,53 +1,34 @@
 defmodule Fallout do
-  def hack,        do: hack IO.gets "Available words? "
-  def hack(words)  do
-    words = words |> String.rstrip |> String.upcase
-    scored_words = words |> score_words
+  def hack, do: hack IO.gets "Available words? "
+  def hack(word_list) when is_list(word_list) do
+    scored_words = score_words(word_list)
     word_to_try = scored_words |> best_word |> suggested_word |> String.upcase
-    word_list = words |> to_list
-    IO.puts "Possible words remaining: #{words}"
     IO.puts "Optimal word to try next: #{word_to_try}"
     likeness = IO.gets "Likeness for #{word_to_try}? "
-    if "exit\n" == likeness do
-      :ok
-    else
-      likeness = likeness |> String.rstrip |> String.to_integer
-      words
-      |> to_list
-      |> Enum.filter(&(compare(&1, word_to_try) == likeness))
-      |> Enum.join(" ")
-      |> hack
-    end
+    likeness = likeness |> String.rstrip |> String.to_integer
+    word_list |> Stream.filter(&(compare(&1, word_to_try) == likeness)) |> Enum.join(" ") |> hack
+  end
+  def hack(words) do
+    words = words |> String.rstrip |> String.upcase
+    IO.puts "Possible words remaining: #{words}"
+    words |> String.split(" ") |> hack
   end
 
+  def best_word(scored_words),      do: scored_words |> Enum.max_by fn({_, v}) -> v end
   def suggested_word({word, _val}), do: word
-
-  @doc """
-  See if a given `string` matches all other options in a given map
-  """
-  def matches_all?(map, string), do: Enum.all? map, &F4.match?(&1, string)
-
-  @doc """
-  Call the `compare` function on a key and a string
-  """
-  def match?({a, value}, b), do: value === compare(Atom.to_string(a), b)
 
   @doc """
   Find the amount of common letters at identical indexes between 2 strings
   """
-  def  compare(a, b),               do: compare(to_charlist(a), to_charlist(b), 0)
-  defp compare([], _, acc),         do: acc
-  defp compare([a|at], [b|bt], acc) do
-    if (a === b), do: acc = acc + 1
-    compare(at, bt, acc)
-  end
+  def compare(a, b),                do: compare(to_charlist(a), to_charlist(b), 0)
+  def compare([], _, acc),          do: acc
+  def compare([a|t1], [a|t2], acc), do: compare(t1, t2, acc + 1)
+  def compare([_|t1], [_|t2], acc), do: compare(t1, t2, acc)
 
+  def score_words(""),              do: :error
+  def score_words(word_list),       do: Enum.zip(word_list, word_score_values(word_list)) |> to_map
 
-  def score_words(""),    do: :error
-  def score_words(words), do: Enum.zip(word_score_keys(words), word_score_values(words)) |> to_map
-
-  def word_score_keys(words),       do: words |> to_list
-  def word_score_values(words),     do: words |> to_list |> Enum.map &(score_word(&1, count_chars(words)))
+  def word_score_values(word_list), do: word_list |> Enum.map &(score_word(&1, count_chars(word_list)))
 
   def score_word(word, map),        do: word |> String.codepoints |> score_word(map, 0)
   def score_word([h|t], map, acc),  do: score_word(t, map, acc + score_letter(h, map))
@@ -57,18 +38,13 @@ defmodule Fallout do
   def score_letter({:ok, value}),   do: value
   def score_letter({:error}),       do: 0
 
-  def best_word(scored_words), do: scored_words |> Enum.max_by fn({_, v}) -> v end
-
   def to_list(string),              do: String.split(string, [" ", ","], trim: true)
   def to_charlist(string),          do: String.split(string, "", trim: true)
   def to_map(kw_list),              do: Enum.into(kw_list, %{})
   def list_to_string(list),         do: Enum.map(list, &("#{&1} ")) |> List.to_string |> String.rstrip
   def alphabet_map(value \\ 0),     do: Enum.into ?A..?Z, %{}, &{String.to_atom(<<&1>>), value}
 
-  def count_chars(s),         do: s |> String.replace(" ", "") |> String.codepoints |> count_chars(alphabet_map)
-  def count_chars([], map),   do: map
-  def count_chars([h|t], map) do
-    map = Map.update!(map, String.to_atom(h), &(&1 +1))
-    count_chars(t, map)
-  end
+  def count_chars(list),            do: list |> Enum.join("") |> String.codepoints |> count_chars(alphabet_map)
+  def count_chars([], map),         do: map
+  def count_chars([h|t], map),      do: count_chars(t, Map.update!(map, String.to_atom(h), &(&1 +1)))
 end
