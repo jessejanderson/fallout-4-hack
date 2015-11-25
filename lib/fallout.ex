@@ -15,18 +15,22 @@ defmodule Fallout do
       :ok
     else
       likeness = likeness |> String.rstrip |> String.to_integer
-      add_word(word_to_try, likeness, scored_words, words)
+      words
+      |> to_list
+      |> Enum.filter(&(compare(&1, word_to_try) == likeness))
+      |> Enum.join(" ")
+      |> hack
     end
   end
 
   def suggested_word({word, _val}), do: word
 
-  def add_word(word, likeness, word_map, words) do
-    key = word |> String.rstrip |> String.to_atom
-    word_map = Map.put(word_map, key, likeness)
-    new_words = words |> to_list |> Enum.filter(&(&1 != word)) |> list_to_string
-    hack(new_words)
-  end
+  # def add_word(word, likeness, word_map, words) do
+    # key = word |> String.rstrip |> String.to_atom
+    # word_map = Map.put(word_map, key, likeness)
+    # new_words = words |> to_list |> Enum.filter(&(&1 != word)) |> list_to_string
+    # hack(new_words)
+  # end
 
   def suggest_words(words) do
     IO.puts "hi"
