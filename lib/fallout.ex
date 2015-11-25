@@ -1,5 +1,3 @@
-# NEXT: remove words that match likeness
-
 defmodule Fallout do
   def hack,        do: hack IO.gets "Available words? "
   def hack(words)  do
@@ -7,7 +5,6 @@ defmodule Fallout do
     scored_words = words |> score_words
     word_to_try = scored_words |> best_word |> suggested_word |> String.upcase
     word_list = words |> to_list
-    suggest_words(words)
     IO.puts "Possible words remaining: #{words}"
     IO.puts "Optimal word to try next: #{word_to_try}"
     likeness = IO.gets "Likeness for #{word_to_try}? "
@@ -24,35 +21,6 @@ defmodule Fallout do
   end
 
   def suggested_word({word, _val}), do: word
-
-  # def add_word(word, likeness, word_map, words) do
-    # key = word |> String.rstrip |> String.to_atom
-    # word_map = Map.put(word_map, key, likeness)
-    # new_words = words |> to_list |> Enum.filter(&(&1 != word)) |> list_to_string
-    # hack(new_words)
-  # end
-
-  def suggest_words(words) do
-    IO.puts "hi"
-  end
-  #####
-  # COPIED vvv
-  #####
-  def _suggest_words(map, words) do
-    _suggest_words(map, to_list(words), [])
-  end
-  defp _suggest_words(_, [], result) when length(result) === 1 do
-    IO.puts "The answer is:"
-    result |> Enum.reverse |> Enum.join(" ") |> String.upcase |> IO.puts
-  end
-  defp _suggest_words(_, [], matches) do
-    IO.puts "Try one of these words:"
-    matches |> Enum.reverse |> Enum.join(" ") |> String.upcase |> IO.puts
-  end
-  defp _suggest_words(word_map, [h|t], matches) do
-    if matches_all?(word_map, h), do: matches = [h|matches]
-    _suggest_words(word_map, t, matches)
-  end
 
   @doc """
   See if a given `string` matches all other options in a given map
@@ -74,9 +42,6 @@ defmodule Fallout do
     compare(at, bt, acc)
   end
 
-  #####
-  # COPIED ^^^
-  #####
 
   def score_words(""),    do: :error
   def score_words(words), do: Enum.zip(word_score_keys(words), word_score_values(words)) |> to_map
@@ -107,73 +72,3 @@ defmodule Fallout do
     count_chars(t, map)
   end
 end
-
-defmodule F4Old do
-
-  # def hack,       do: hack(IO.gets "What words are available?\n")
-  # def hack(words) do
-  #   word_list = to_word_list(words)
-  #   add_word(ask_word, Map.new, word_list)
-  # end
-
-
-  # def add_word(word, word_map, word_list) do
-  #   key = word |> String.rstrip |> String.to_atom
-  #   word_map = Map.put(word_map, key, likeness)
-  #   suggest_words(word_map, word_list)
-  #   add_word(ask_word, word_map, word_list)
-  # end
-
-  # def likeness do
-  #   matching_letters = IO.gets "How much likeness?\n"
-  #   matching_letters |> String.rstrip |> String.to_integer
-  # end
-
-  # defp ask_word, do: IO.gets "Which word did you try?\n"
-
-
-  # defp to_list(string), do: String.split(string, "", trim: true)
-  # defp to_word_list(string), do: String.split(string, [" ", ","], trim: true)
-
-  # GOOOD CODE!!!!! ^^
-
-
-
-
-
-
-
-
-
-
-
-
-  # defp add_word(word, value, key)
-  #   key = key <> [word => value]
-  # end
-
-  # def compare(word, key) do
-
-  # end
-end
-
-
-#   @word_list = []
-#   @answer = [{}]
-#   def word_list do
-
-
-#   def solve(word_list) do
-#     cond do
-#       :solved             -> :answer
-#       possible_answers(a) -> :give_leftover_choices
-#       true                -> :ask_for_first_result
-#     end
-#   end
-# end
-
-
-
-# WORDS = ~w[empty enact swore helps knows names stake marks large price unite stark torch handy]
-# IO.puts WORDS
-# def correct?
