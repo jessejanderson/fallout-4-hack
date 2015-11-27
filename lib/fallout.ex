@@ -67,7 +67,6 @@ defmodule Fallout do
   def compare([a|t1], [a|t2], acc), do: compare(t1, t2, acc + 1)
   def compare([_|t1], [_|t2], acc), do: compare(t1, t2, acc)
 
-  def to_list(string),              do: String.split(string, [" ", ","], trim: true)
   def to_charlist(string),          do: String.split(string, "", trim: true)
   def list_to_string(list),         do: Enum.map(list, &("#{&1} ")) |> List.to_string |> String.rstrip
   def alphabet_map(value \\ 0),     do: Enum.into ?A..?Z, %{}, &{String.to_atom(<<&1>>), value}
