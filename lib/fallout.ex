@@ -1,32 +1,47 @@
 defmodule Fallout do
-  def hack, do: hack IO.gets "Available words? "
-  def hack(word_list) when is_list(word_list) do
-    scored_words = score_words(word_list)
-    word_to_try = scored_words |> best_word |> suggested_word |> String.upcase
-    IO.puts "Optimal word to try next: #{word_to_try}"
-    likeness = IO.gets "Likeness for #{word_to_try}? "
-    likeness = likeness |> String.rstrip |> String.to_integer
-    word_list |> Stream.filter(&(compare(&1, word_to_try) == likeness)) |> Enum.join(" ") |> hack
+  def hack do
+    IO.gets("Available words? ") |> String.rstrip |> String.upcase |> hack
   end
-  def hack(words) do
-    words = words |> String.rstrip |> String.upcase
-    IO.puts "Possible words remaining: #{words}"
-    words |> String.split(" ") |> hack
+  def hack(words) when not is_list(words) do
+    words |> pipe_puts("Words remaining: ") |> String.split(" ") |> hack
   end
-
-  def best_word(scored_words),      do: scored_words |> Enum.max_by fn({_, v}) -> v end
-  def suggested_word({word, _val}), do: word
+  def hack(word_list) do
+    suggested_word = suggest_word(word_list)
+    likeness = get_likeness(suggested_word)
+    word_list
+    |> Stream.filter(&(compare(&1, suggested_word) == likeness))
+    |> Enum.join(" ")
+    |> hack
+  end
 
   @doc """
-  Find the amount of common letters at identical indexes between 2 strings
+  Suggests the best word to try.
   """
-  def compare(a, b),                do: compare(to_charlist(a), to_charlist(b), 0)
-  def compare([], _, acc),          do: acc
-  def compare([a|t1], [a|t2], acc), do: compare(t1, t2, acc + 1)
-  def compare([_|t1], [_|t2], acc), do: compare(t1, t2, acc)
+  def suggest_word(word_list) do
+    word_list
+    |> best_word
+    |> pipe_puts("Try This Word: ")
+  end
 
-  def score_words(""),              do: :error
-  def score_words(word_list),       do: Enum.zip(word_list, word_score_values(word_list)) |> to_map
+  @doc """
+  Finds the word with the most characters in common with the entire word list.
+  """
+  def best_word(word_list) do
+    word_list
+    |> Stream.map(&(score_word(&1, count_chars(word_list))))
+    |> Stream.zip(word_list)
+    |> Enum.max
+    |> Tuple.to_list
+    |> Enum.at(1)
+  end
+
+
+  @doc """
+  Asks user for the likeness result and returns as an integer.
+  """
+  def get_likeness(word) do
+    IO.gets("Likeness for #{word}? ") |> String.rstrip |> String.to_integer
+  end
 
   def word_score_values(word_list), do: word_list |> Enum.map &(score_word(&1, count_chars(word_list)))
 
@@ -38,6 +53,20 @@ defmodule Fallout do
   def score_letter({:ok, value}),   do: value
   def score_letter({:error}),       do: 0
 
+  def pipe_puts(string, pre_text, post_text \\ "") do
+    IO.puts(pre_text <> string <> post_text)
+    string
+  end
+
+
+  @doc """
+  Find the amount of common letters at identical indexes between 2 strings
+  """
+  def compare(a, b),                do: compare(to_charlist(a), to_charlist(b), 0)
+  def compare([], _, acc),          do: acc
+  def compare([a|t1], [a|t2], acc), do: compare(t1, t2, acc + 1)
+  def compare([_|t1], [_|t2], acc), do: compare(t1, t2, acc)
+
   def to_list(string),              do: String.split(string, [" ", ","], trim: true)
   def to_charlist(string),          do: String.split(string, "", trim: true)
   def to_map(kw_list),              do: Enum.into(kw_list, %{})
@@ -47,4 +76,6 @@ defmodule Fallout do
   def count_chars(list),            do: list |> Enum.join("") |> String.codepoints |> count_chars(alphabet_map)
   def count_chars([], map),         do: map
   def count_chars([h|t], map),      do: count_chars(t, Map.update!(map, String.to_atom(h), &(&1 +1)))
+
+  # def suggested_word({word, _val}), do: word
 end
