@@ -69,7 +69,6 @@ defmodule Fallout do
 
   def to_list(string),              do: String.split(string, [" ", ","], trim: true)
   def to_charlist(string),          do: String.split(string, "", trim: true)
-  def to_map(kw_list),              do: Enum.into(kw_list, %{})
   def list_to_string(list),         do: Enum.map(list, &("#{&1} ")) |> List.to_string |> String.rstrip
   def alphabet_map(value \\ 0),     do: Enum.into ?A..?Z, %{}, &{String.to_atom(<<&1>>), value}
 
