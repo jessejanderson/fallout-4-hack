@@ -6,6 +6,10 @@ defmodule Fallout do
     IO.puts("Remaining Possibilities: #{words}")
     words |> String.split(" ") |> hack
   end
+  def hack([ word | [] ]) do
+    vaultboy
+    IO.puts "The Solution Is \"#{word}\""
+  end
   def hack(word_list) do
     suggested_word = suggest_word(word_list)
     likeness = get_likeness(suggested_word)
@@ -68,4 +72,27 @@ defmodule Fallout do
   defp count_chars([], map),         do: map
   defp count_chars([h|t], map),      do: count_chars(t, Map.update!(map, String.to_atom(h), &(&1 +1)))
   defp alphabet_map(value \\ 0),     do: Enum.into ?A..?Z, %{}, &{String.to_atom(<<&1>>), value}
+
+  def vaultboy do
+    IO.puts """
+    ░░░░░░░░░░░░░░░░░░▄▄░░░░░░░░░░░
+    ░░░░░▄░░░░░░▄▄▄░░████▄▄░░░░░░░░
+    ░░░░░██▄▄▄██████████████▄▄░░░░░
+    ░░░░██████▀▒▀▀███▀████████▄░░░░
+    ░░░▄▀▀▀▀▀▒████▄▄▄█▄▒▀███████░░░
+    ░░░▀▒██▀▒████████████▄▄▄▄▒███░░
+    ░░░░█████████████▄▀▀█████▀▄██░░
+    ░░░▄██░░███████████▄████▒████░░
+    ░░▄███▄███▒▄███▀░██████▄▀▄██▀░░
+    ░░██████▀▒█████▄███████░▀░░▀░░░
+    ░░██████▄█████████████▀░▒▄░░░░░
+    ░░██▄▒▀▀██████▀▀███████▄█▀░░░░░
+    ░░██▄▀▀▄▄▄▄▄▄▄▀░██████████░░░░░
+    ░░░▀██▄░▄███▄▄▄█████████▀▀░░░░░
+    ░░░░████▄▄███████████░░░░░░░░░░
+    ░░░░░▀█████████████▀░░░░░░░░░░░
+    ░░░░░░░▀▀▀███████▒░░░░░░░░░░░░░
+    ░░░░░░░░░░░▀▀▀▀░░░░░░░░░░░░░░░░
+    """
+  end
 end
