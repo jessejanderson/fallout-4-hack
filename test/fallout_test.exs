@@ -5,4 +5,6 @@ defmodule FalloutTest do
   test "the truth" do
     assert 1 + 1 == 2
   end
+
+  test "lots of words"
 end
