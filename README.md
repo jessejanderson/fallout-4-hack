@@ -1,6 +1,6 @@
 # Fallout
 
-**TODO: Add description**
+**TODO: Add tests (so much for TDD)**
 
 ## Installation
 

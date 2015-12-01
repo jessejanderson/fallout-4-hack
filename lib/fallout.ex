@@ -1,7 +1,15 @@
 defmodule Fallout do
-  def hack do
-    IO.gets("Available words? ") |> String.rstrip |> String.upcase |> hack
-  end
+  @moduledoc """
+  Helps solve terminal hacking puzzles for Fallout 4
+  """
+
+  @doc """
+  Initiates a hack and asks for available words, seperated by space
+  """
+  def hack, do: IO.gets("Available words? ") |> String.rstrip |> String.upcase |> hack
+  @doc """
+  Initiates a hack with provided words
+  """
   def hack(words) when not is_list(words) do
     IO.puts("Remaining Possibilities: #{words}")
     words |> String.split(" ") |> hack
@@ -20,7 +28,7 @@ defmodule Fallout do
   end
 
   @doc """
-  Suggests the word with most commonly used characters among the word list.
+  Suggests the word with most commonly used characters among the word list
   """
   def suggest_word(word_list) do
     suggested_word = word_list |> get_best_word
@@ -37,7 +45,7 @@ defmodule Fallout do
   end
 
   @doc """
-  Asks user for the likeness result and returns as an integer.
+  Asks user for the likeness result and returns as an integer
   """
   def get_likeness(word) do
     IO.gets("Likeness for #{word}? ") |> String.rstrip |> String.to_integer
@@ -53,7 +61,7 @@ defmodule Fallout do
   Find the amount of common letters at identical indexes between 2 strings
 
   ## Examples
-      ...> Fallout.compare("WALL", "BALL")
+      iex> Fallout.compare("WALL", "BALL")
       3
   """
   def  compare(a, b),                do: compare(String.codepoints(a), String.codepoints(b), 0)
@@ -62,10 +70,10 @@ defmodule Fallout do
   defp compare([_|t1], [_|t2], acc), do: compare(t1, t2, acc)
 
   @doc """
-  Returns a map with the total character count (A-Z) of the list.
+  Returns a map with the total character count (A-Z) of the list
 
   ## Examples
-      ...> Fallout.count_chars(["ABC", "BCD"])
+      iex> Fallout.count_chars(["ABC", "BCD"])
       %{A: 1, B: 2, C: 2, D: 1, E: 0, F: 0, ...}
   """
   def  count_chars(list),            do: list |> Enum.join("") |> String.codepoints |> count_chars(alphabet_map)
@@ -73,6 +81,9 @@ defmodule Fallout do
   defp count_chars([h|t], map),      do: count_chars(t, Map.update!(map, String.to_atom(h), &(&1 +1)))
   defp alphabet_map(value \\ 0),     do: Enum.into ?A..?Z, %{}, &{String.to_atom(<<&1>>), value}
 
+  @doc """
+  Prints an ASCII Vaultboy
+  """
   def vaultboy do
     IO.puts """
     ░░░░░░░░░░░░░░░░░░▄▄░░░░░░░░░░░
