@@ -1,6 +1,13 @@
 # Fallout
 
 **TODO: Add tests (so much for TDD)**
+- Add Tests (so much for TDD)
+- Fix CLI Help docs
+
+## Run at Command Line
+Run `./fallout ` followed by the 8 words available for your hack.
+
+Example: `./fallout bat cat bar car bob cob but cut`
 
 ## Installation
 
